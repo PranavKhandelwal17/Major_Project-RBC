@@ -1,8 +1,35 @@
-﻿.venv/
-.venv_tf/
+# Virtual environments
+.venv*/
+venv/
+ENV/
+pip_temp/
+
+# Python artifacts
 __pycache__/
-*.pyc
-.ipynb_checkpoints/
+*.py[cod]
+*$py.class
+*.ipynb_checkpoints/
 .env
 
+# Node & Web App build artifacts
+**/node_modules/
+**/dist/
+**/dist-ssr/
+**/*.local
+.eslintcache
+*.tsbuildinfo
+.vite/
+
+
+
+# Backend temporary static files
+app/static/uploads/*
+!app/static/uploads/.gitkeep
+app/static/processed/*
+!app/static/processed/.gitkeep
+
+# System & Editor
 .DS_Store
+Thumbs.db
+.vscode/
+.idea/
