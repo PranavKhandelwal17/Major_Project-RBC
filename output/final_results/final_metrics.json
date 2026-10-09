@@ -1,0 +1,23 @@
+{
+    "project": "RBC Morphology Classification",
+    "selected_model": "EfficientNetV2-S controlled fine-tuning",
+    "checkpoint": "C:\\RBC\\Major_Project-RBC\\models\\efficientnetv2s_experiment\\controlled_finetune\\best_controlled_finetune.keras",
+    "final_model": "C:\\RBC\\Major_Project-RBC\\models\\final\\rbc_morphology_efficientnetv2s_final.keras",
+    "input_size": [
+        224,
+        224,
+        3
+    ],
+    "number_of_classes": 12,
+    "validation_metrics": {
+        "accuracy": 0.8703576326370239,
+        "loss": 0.4215664565563202
+    },
+    "test_metrics": {
+        "accuracy": 0.8535988926887512,
+        "loss": 0.42594513297080994
+    },
+    "previously_reported_macro_recall": 0.7636,
+    "previously_reported_macro_f1": 0.7902,
+    "notes": "Macro recall and macro F1 are historical validation results from the controlled checkpoint evaluation. Recompute them from the saved model if exact reproducibility is required."
+}
