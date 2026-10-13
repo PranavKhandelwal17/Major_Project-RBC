@@ -5,6 +5,10 @@ import {
   MOCK_PROCESSED_IMAGE,
   MOCK_SEGMENTED_IMAGE,
   MOCK_GRADCAM_IMAGE,
+  MODEL_CANDIDATES,
+  PER_CLASS_METRICS,
+  ACTIVE_MODEL_NAME,
+  ACTIVE_MODEL_ARCH,
 } from '../data/mockData';
 import { downloadClinicalReport } from '../utils/reportExporter';
 
@@ -231,6 +235,7 @@ export async function runFullAnalysis(
     segmentedImageUrl: segRes.segmentedUrl,
     heatmapUrl: camRes.heatmapUrl,
     overlayUrl: camRes.overlayUrl,
+    reportUrl: reportRes.reportUrl,
     processingTime: `${durationSec}s`,
   };
 }
@@ -252,9 +257,78 @@ export async function getAnalysisHistory(): Promise<HistoryItem[]> {
   }
 }
 
+// ---- Model Performance & Benchmark ----
+export async function getModelComparison() {
+  const live = await checkBackendHealth();
+  if (!live) {
+    return {
+      candidates: MODEL_CANDIDATES,
+      perClassMetrics: PER_CLASS_METRICS,
+      selectedModel: ACTIVE_MODEL_NAME,
+      numClasses: 12,
+      dataset: 'Chula-RBC-12 Peripheral Blood Smear Dataset',
+    };
+  }
+  try {
+    const res = await fetch(`${API_BASE_URL}/models/comparison`);
+    if (!res.ok) throw new Error('Benchmark fetch failed');
+    return await res.json();
+  } catch {
+    return {
+      candidates: MODEL_CANDIDATES,
+      perClassMetrics: PER_CLASS_METRICS,
+      selectedModel: ACTIVE_MODEL_NAME,
+      numClasses: 12,
+      dataset: 'Chula-RBC-12 Peripheral Blood Smear Dataset',
+    };
+  }
+}
+
+export async function getSelectedModel() {
+  const live = await checkBackendHealth();
+  if (!live) {
+    return {
+      name: ACTIVE_MODEL_NAME,
+      architecture: ACTIVE_MODEL_ARCH,
+      version: 'v2.1',
+      accuracy: 87.04,
+      testAccuracy: 85.36,
+      macroF1: 79.02,
+      macroRecall: 76.36,
+      status: 'Active',
+    };
+  }
+  try {
+    const res = await fetch(`${API_BASE_URL}/models/selected`);
+    if (!res.ok) throw new Error('Model fetch failed');
+    return await res.json();
+  } catch {
+    return {
+      name: ACTIVE_MODEL_NAME,
+      architecture: ACTIVE_MODEL_ARCH,
+      version: 'v2.1',
+      accuracy: 87.04,
+      testAccuracy: 85.36,
+      macroF1: 79.02,
+      macroRecall: 76.36,
+      status: 'Active',
+    };
+  }
+}
+
 // ---- Download Report as PDF / HTML ----
 export function downloadReportPDF(resultOrId?: AnalysisResult | string): void {
   if (resultOrId && typeof resultOrId === 'object') {
+    if (resultOrId.reportUrl && resultOrId.reportUrl !== '#') {
+      const link = document.createElement('a');
+      link.href = resultOrId.reportUrl;
+      link.download = `RBC_Clinical_Report_${resultOrId.analysisId}.pdf`;
+      link.target = '_blank';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      return;
+    }
     downloadClinicalReport(resultOrId);
   } else {
     downloadClinicalReport({
@@ -263,3 +337,4 @@ export function downloadReportPDF(resultOrId?: AnalysisResult | string): void {
     });
   }
 }
+

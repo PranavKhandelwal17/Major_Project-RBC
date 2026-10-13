@@ -37,7 +37,17 @@ const ClinicalReport: React.FC<ClinicalReportProps> = ({ result }) => {
   const clinicalDiff = getClinicalDifferentialWorkup(result.predictedClass);
 
   const handleDownload = () => {
-    downloadClinicalReport(result);
+    if (result.reportUrl && result.reportUrl !== '#') {
+      const link = document.createElement('a');
+      link.href = result.reportUrl;
+      link.download = `RBC_Clinical_Report_${result.analysisId}.pdf`;
+      link.target = '_blank';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } else {
+      downloadClinicalReport(result);
+    }
   };
 
   return (

@@ -8,6 +8,7 @@ import ResultsPage from './pages/ResultsPage';
 import ReportPage from './pages/ReportPage';
 import HistoryPage from './pages/HistoryPage';
 import MethodologyPage from './pages/MethodologyPage';
+import ModelPerformancePage from './pages/ModelPerformancePage';
 import AboutPage from './pages/AboutPage';
 import type { Page, AnalysisResult } from './types';
 
@@ -65,6 +66,8 @@ const App: React.FC = () => {
         return <HistoryPage onNavigate={handleNavigate} />;
       case 'methodology':
         return <MethodologyPage />;
+      case 'model-performance':
+        return <ModelPerformancePage onNavigate={handleNavigate} />;
       case 'about':
         return <AboutPage onNavigate={handleNavigate} />;
       default:

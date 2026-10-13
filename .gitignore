@@ -27,6 +27,15 @@ app/static/uploads/*
 !app/static/uploads/.gitkeep
 app/static/processed/*
 !app/static/processed/.gitkeep
+app/static/reports/*
+!app/static/reports/.gitkeep
+output/cli_runs/*
+!output/cli_runs/.gitkeep
+
+# Temporary wrappers & logs
+*.log
+powershell.cmd
+rbc-insight-ai/powershell.cmd
 
 # System & Editor
 .DS_Store

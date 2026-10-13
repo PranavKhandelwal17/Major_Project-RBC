@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Search, Eye, Filter, CheckCircle2, Calendar } from 'lucide-react';
 import type { Page } from '../types';
 import { MOCK_HISTORY, MOCK_RBC_IMAGE } from '../data/mockData';
+import { getAnalysisHistory } from '../services/api';
 import MorphologyBadge from '../components/shared/MorphologyBadge';
 import type { MorphologyClass } from '../types';
 
@@ -16,11 +17,18 @@ const MORPHOLOGY_OPTIONS = [
 ];
 
 const HistoryPage: React.FC<HistoryPageProps> = ({ onNavigate }) => {
+  const [historyItems, setHistoryItems] = useState(MOCK_HISTORY);
   const [search, setSearch] = useState('');
   const [morphFilter, setMorphFilter] = useState('All');
   const [confFilter, setConfFilter] = useState('All');
 
-  const filtered = MOCK_HISTORY.filter((item) => {
+  useEffect(() => {
+    getAnalysisHistory().then((data) => {
+      if (data && data.length > 0) setHistoryItems(data);
+    });
+  }, []);
+
+  const filtered = historyItems.filter((item) => {
     const matchSearch =
       item.analysisId.toLowerCase().includes(search.toLowerCase()) ||
       item.predictedClass.toLowerCase().includes(search.toLowerCase());
@@ -37,7 +45,7 @@ const HistoryPage: React.FC<HistoryPageProps> = ({ onNavigate }) => {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-black text-slate-800">Analysis History</h1>
-        <p className="text-sm text-slate-500 mt-1">{MOCK_HISTORY.length} total analyses</p>
+        <p className="text-sm text-slate-500 mt-1">{historyItems.length} total analyses</p>
       </div>
 
       {/* Filters */}

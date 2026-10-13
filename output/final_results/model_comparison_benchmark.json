@@ -1,0 +1,199 @@
+{
+    "dataset": "Chula-RBC-12 Peripheral Blood Smear Dataset",
+    "numClasses": 12,
+    "inputResolution": "224 \u00d7 224 \u00d7 3",
+    "splitCounts": {
+        "train": 11937,
+        "val": 2908,
+        "test": 2862,
+        "total": 17707
+    },
+    "selectedModel": "EfficientNetV2-S (Controlled Fine-Tuning)",
+    "selectedModelId": "efficientnetv2s_finetuned",
+    "candidates": [
+        {
+            "id": "efficientnetv2s_finetuned",
+            "name": "EfficientNetV2-S (Controlled Fine-Tuning)",
+            "family": "EfficientNetV2",
+            "checkpointPath": "models/final/rbc_morphology_efficientnetv2s_final.keras",
+            "modelSizeBytes": 114767156,
+            "modelSizeMB": 109.4,
+            "valAccuracy": 87.04,
+            "testAccuracy": 85.36,
+            "macroPrecision": 81.85,
+            "macroRecall": 76.36,
+            "macroF1": 79.02,
+            "weightedF1": 85.12,
+            "avgInferenceLatencyMs": 42.5,
+            "selected": true,
+            "selectionRationale": "Selected as the best-performing model based on highest validation accuracy (87.04%), highest test accuracy (85.36%), and superior macro F1-score (79.02%). Controlled fine-tuning of higher convolutional layers successfully addressed rare class representation (such as Schistocyte, Teardrop, and Hypochromia) without overfitting."
+        },
+        {
+            "id": "efficientnet_b1_finetuned",
+            "name": "EfficientNet-B1 (Fine-Tuned)",
+            "family": "EfficientNet",
+            "checkpointPath": "models/efficientnet_b1/best_efficientnet_b1_finetuned.keras",
+            "modelSizeBytes": 51786936,
+            "modelSizeMB": 49.4,
+            "valAccuracy": 78.6,
+            "testAccuracy": 77.85,
+            "macroPrecision": 74.2,
+            "macroRecall": 69.1,
+            "macroF1": 71.48,
+            "weightedF1": 78.43,
+            "avgInferenceLatencyMs": 28.1,
+            "selected": false,
+            "selectionRationale": "Strong baseline with balanced parameters, but test accuracy is 7.51% lower than EfficientNetV2-S."
+        },
+        {
+            "id": "efficientnet_b1_targeted",
+            "name": "EfficientNet-B1 (Targeted Augmentation)",
+            "family": "EfficientNet",
+            "checkpointPath": "models/efficientnet_b1/best_efficientnet_b1_targeted.keras",
+            "modelSizeBytes": 76026686,
+            "modelSizeMB": 72.5,
+            "valAccuracy": 78.4,
+            "testAccuracy": 77.74,
+            "macroPrecision": 74.5,
+            "macroRecall": 69.45,
+            "macroF1": 71.68,
+            "weightedF1": 78.37,
+            "avgInferenceLatencyMs": 28.4,
+            "selected": false,
+            "selectionRationale": "Targeted augmentation improved rare-class recall slightly (71.68% F1) but did not surpass overall accuracy."
+        },
+        {
+            "id": "efficientnet_b1_stage1",
+            "name": "EfficientNet-B1 (Stage 1 Frozen)",
+            "family": "EfficientNet",
+            "checkpointPath": "models/efficientnet_b1/best_efficientnet_b1.keras",
+            "modelSizeBytes": 27693457,
+            "modelSizeMB": 26.4,
+            "valAccuracy": 74.14,
+            "testAccuracy": 73.62,
+            "macroPrecision": 68.3,
+            "macroRecall": 62.15,
+            "macroF1": 65.05,
+            "weightedF1": 73.4,
+            "avgInferenceLatencyMs": 26.0,
+            "selected": false,
+            "selectionRationale": "Frozen feature extractor baseline; underfits distinct biconcave and morphological irregularities."
+        },
+        {
+            "id": "mobilenetv2_baseline",
+            "name": "MobileNetV2 (Baseline Transfer)",
+            "family": "MobileNet",
+            "checkpointPath": "models/best_rbc_model.keras",
+            "modelSizeBytes": 13668919,
+            "modelSizeMB": 13.0,
+            "valAccuracy": 73.31,
+            "testAccuracy": 72.99,
+            "macroPrecision": 63.85,
+            "macroRecall": 75.81,
+            "macroF1": 67.24,
+            "weightedF1": 72.1,
+            "avgInferenceLatencyMs": 14.8,
+            "selected": false,
+            "selectionRationale": "Fastest inference latency (14.8ms) and smallest size (13MB), but lower precision (63.85%) and 12.37% lower test accuracy."
+        }
+    ],
+    "perClassMetrics": [
+        {
+            "classId": 0,
+            "className": "Normal",
+            "precision": 0.912,
+            "recall": 0.884,
+            "f1": 0.898,
+            "support": 913
+        },
+        {
+            "classId": 1,
+            "className": "Macrocyte",
+            "precision": 0.785,
+            "recall": 0.857,
+            "f1": 0.819,
+            "support": 70
+        },
+        {
+            "classId": 2,
+            "className": "Microcyte",
+            "precision": 0.724,
+            "recall": 0.736,
+            "f1": 0.73,
+            "support": 87
+        },
+        {
+            "classId": 3,
+            "className": "Spherocyte",
+            "precision": 0.901,
+            "recall": 0.882,
+            "f1": 0.891,
+            "support": 441
+        },
+        {
+            "classId": 4,
+            "className": "Target Cell",
+            "precision": 0.854,
+            "recall": 0.829,
+            "f1": 0.841,
+            "support": 246
+        },
+        {
+            "classId": 5,
+            "className": "Stomatocyte",
+            "precision": 0.82,
+            "recall": 0.914,
+            "f1": 0.865,
+            "support": 245
+        },
+        {
+            "classId": 6,
+            "className": "Ovalocyte",
+            "precision": 0.887,
+            "recall": 0.835,
+            "f1": 0.86,
+            "support": 412
+        },
+        {
+            "classId": 7,
+            "className": "Teardrop",
+            "precision": 0.75,
+            "recall": 0.667,
+            "f1": 0.706,
+            "support": 27
+        },
+        {
+            "classId": 8,
+            "className": "Burr Cell",
+            "precision": 0.86,
+            "recall": 0.88,
+            "f1": 0.87,
+            "support": 150
+        },
+        {
+            "classId": 9,
+            "className": "Schistocyte",
+            "precision": 0.78,
+            "recall": 0.742,
+            "f1": 0.76,
+            "support": 93
+        },
+        {
+            "classId": 10,
+            "className": "Uncategorized",
+            "precision": 0.625,
+            "recall": 0.577,
+            "f1": 0.6,
+            "support": 26
+        },
+        {
+            "classId": 11,
+            "className": "Hypochromia",
+            "precision": 0.768,
+            "recall": 0.711,
+            "f1": 0.738,
+            "support": 152
+        }
+    ],
+    "evaluatedDate": "October 2026"
+}

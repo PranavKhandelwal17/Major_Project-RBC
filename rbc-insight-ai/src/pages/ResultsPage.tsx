@@ -60,7 +60,19 @@ const ResultsPage: React.FC<ResultsPageProps> = ({ result: propResult, onNavigat
               Report
             </button>
             <button
-              onClick={() => downloadClinicalReport(result)}
+              onClick={() => {
+                if (result.reportUrl && result.reportUrl !== '#') {
+                  const link = document.createElement('a');
+                  link.href = result.reportUrl;
+                  link.download = `RBC_Clinical_Report_${result.analysisId}.pdf`;
+                  link.target = '_blank';
+                  document.body.appendChild(link);
+                  link.click();
+                  document.body.removeChild(link);
+                } else {
+                  downloadClinicalReport(result);
+                }
+              }}
               className="flex items-center gap-1.5 px-3 py-2 bg-white/15 hover:bg-white/25 rounded-xl text-sm font-semibold transition-colors cursor-pointer"
               title="Download Clinical PDF / Report"
             >
@@ -87,7 +99,7 @@ const ResultsPage: React.FC<ResultsPageProps> = ({ result: propResult, onNavigat
             Confidence Score
           </p>
           <p className="text-5xl font-black text-blue-600">{result.confidence.toFixed(1)}%</p>
-          <p className="text-xs text-slate-500 mt-1">EfficientNetV2 Softmax</p>
+          <p className="text-xs text-slate-500 mt-1">{result.model || 'EfficientNetV2-S'} Output Probability</p>
         </div>
         {/* RBC Count */}
         <div className="card p-5 text-center">

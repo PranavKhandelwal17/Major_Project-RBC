@@ -52,7 +52,9 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate, onStartDemo }
           <div className="flex-1">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-500/20 rounded-full border border-blue-400/30 mb-4">
               <div className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse" />
-              <span className="text-xs font-semibold text-blue-200">AI System Ready · EfficientNetV2</span>
+              <span className="text-xs font-semibold text-blue-200">
+                AI System Ready · EfficientNetV2-S (87.04% Val Acc)
+              </span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-black text-white mb-3 leading-tight">
               Intelligent RBC
@@ -62,8 +64,8 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate, onStartDemo }
               </span>
             </h1>
             <p className="text-sm text-slate-300 leading-relaxed mb-6 max-w-lg">
-              Upload a blood smear image and analyze red blood cell morphology using image
-              preprocessing, segmentation, EfficientNetV2 classification, and Grad-CAM explainability.
+              Analyze red blood cell morphology using computer vision, deep learning, and explainable AI.
+              Features calibrated segmentation, overlap separation, and Grad-CAM saliency mapping.
             </p>
             <div className="flex flex-wrap gap-3">
               <button
@@ -79,6 +81,13 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate, onStartDemo }
               >
                 <Activity size={16} />
                 Demo Analysis
+              </button>
+              <button
+                onClick={() => onNavigate('model-performance')}
+                className="flex items-center gap-2 px-5 py-2.5 bg-white/10 hover:bg-white/20 text-white font-semibold text-sm rounded-xl border border-white/20 transition-all backdrop-blur-sm"
+              >
+                <Target size={16} />
+                Model Benchmark
               </button>
               <button
                 onClick={() => onNavigate('methodology')}

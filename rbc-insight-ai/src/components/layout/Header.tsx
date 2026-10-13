@@ -15,6 +15,7 @@ const pageTitles: Record<Page, string> = {
   report: 'Clinical Report',
   history: 'Analysis History',
   methodology: 'Methodology',
+  'model-performance': 'Model Performance',
   about: 'About',
 };
 

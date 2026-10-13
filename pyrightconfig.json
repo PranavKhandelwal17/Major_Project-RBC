@@ -1,0 +1,17 @@
+{
+  "venvPath": "C:\\Users\\prajs",
+  "venv": "anaconda3",
+  "include": [
+    "."
+  ],
+  "exclude": [
+    "**/node_modules",
+    "**/__pycache__",
+    "**/dist",
+    "Chula-RBC-12-Dataset-1.0",
+    "data"
+  ],
+  "extraPaths": [
+    "."
+  ]
+}

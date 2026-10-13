@@ -66,7 +66,7 @@ const NewAnalysisPage: React.FC<NewAnalysisPageProps> = ({ onNavigate, demoMode 
           setUploadedFile(demoFile);
         });
     }
-  }, [demoMode]);
+  }, [demoMode, uploadedFile]);
 
   const startAnalysis = useCallback(async () => {
     if (!uploadedFile) return;

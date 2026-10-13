@@ -10,6 +10,7 @@ import {
   ChevronLeft,
   ChevronRight,
   X,
+  Award,
 } from 'lucide-react';
 import type { Page } from '../../types';
 
@@ -25,6 +26,7 @@ const navItems: { id: Page; label: string; icon: React.ReactNode }[] = [
   { id: 'new-analysis', label: 'New Analysis', icon: <Plus size={18} /> },
   { id: 'history', label: 'Analysis History', icon: <History size={18} /> },
   { id: 'methodology', label: 'Methodology', icon: <BookOpen size={18} /> },
+  { id: 'model-performance', label: 'Model Performance', icon: <Award size={18} /> },
   { id: 'about', label: 'About', icon: <Info size={18} /> },
 ];
 

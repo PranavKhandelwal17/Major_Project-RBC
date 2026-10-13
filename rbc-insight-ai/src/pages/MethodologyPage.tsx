@@ -3,82 +3,104 @@ import {
   Upload,
   Sliders,
   Scissors,
+  Split,
   Cpu,
   BarChart2,
   Eye,
   FileText,
+  Award,
+  CheckCircle2,
 } from 'lucide-react';
+import { ACTIVE_MODEL_NAME } from '../data/mockData';
 
 const STEPS = [
   {
     number: '01',
     id: 'input',
-    icon: <Upload size={24} />,
+    icon: <Upload size={22} />,
     title: 'User Input',
     color: 'blue',
     description:
-      'The user uploads a peripheral blood smear image in PNG or JPEG format. The system validates file type, size, and image integrity before proceeding.',
-    details: ['Supported: PNG, JPG, JPEG', 'Max size: 10 MB', 'Validation & preview', 'Drag & drop interface'],
+      'The user uploads a peripheral blood smear microscopy image in PNG, JPG, or JPEG format. File integrity, color profile, and size constraints (<10 MB) are verified before entering the pipeline.',
+    statusText: 'Validation & Resolution Parsing',
+    details: ['Format verification: PNG, JPG, JPEG', 'Max size limit: 10 MB', 'Input metadata extraction', 'Drag & drop support'],
   },
   {
     number: '02',
     id: 'preprocessing',
-    icon: <Sliders size={24} />,
+    icon: <Sliders size={22} />,
     title: 'Image Preprocessing',
     color: 'teal',
     description:
-      'The uploaded image is preprocessed to prepare it for deep learning classification. Preprocessing standardizes inputs and improves model performance.',
-    details: ['Resize to 224 × 224 px', 'Pixel normalization [0,1]', 'CLAHE contrast enhancement', 'Gaussian noise reduction', 'Data augmentation'],
+      'Standardizes smear appearance across varying staining conditions. Converts to LAB color space to apply CLAHE on the L-channel, followed by Gaussian smoothing and anti-aliased resizing to 224×224 px.',
+    statusText: 'LAB CLAHE + Denoise + Standardize',
+    details: ['LAB color conversion', 'CLAHE contrast enhancement (clip=2.0)', '3×3 Gaussian noise filtering', 'Anti-aliased 224×224 resize'],
   },
   {
     number: '03',
     id: 'segmentation',
-    icon: <Scissors size={24} />,
+    icon: <Scissors size={22} />,
     title: 'RBC Segmentation',
     color: 'purple',
     description:
-      'Individual red blood cells are detected and segmented from the blood smear image. Overlapping cells are separated using ellipse fitting and the Watershed algorithm.',
-    details: ['Ellipse fitting for cell boundaries', 'Watershed algorithm', 'Overlap separation', 'Individual cell isolation', '94%+ accuracy'],
+      'Extracts erythrocyte boundaries from brightfield smear backgrounds using Otsu thresholding and morphological opening with an elliptical structuring element.',
+    statusText: 'Otsu Binary Mask + Morphological Filter',
+    details: ['Otsu thresholding', 'Elliptical structuring element (5×5)', 'Contour area filtering (>150 px²)', 'Background artifact removal'],
   },
   {
     number: '04',
-    id: 'classification',
-    icon: <Cpu size={24} />,
-    title: 'EfficientNetV2 Classification',
-    color: 'blue',
+    id: 'overlap',
+    icon: <Split size={22} />,
+    title: 'Overlap Separation',
+    color: 'orange',
     description:
-      'Each segmented RBC is classified using a fine-tuned EfficientNetV2 model trained with transfer learning on a labeled RBC morphology dataset.',
-    details: ['Architecture: EfficientNetV2', 'Transfer learning from ImageNet', '12 morphology classes', 'Compound scaling', 'Fine-tuned on RBC dataset'],
+      'Separates clumped and touching erythrocytes using convexity defect analysis to locate concave pinch points, followed by direct least-squares ellipse fitting and aspect ratio verification.',
+    statusText: 'Concavity Defects + Ellipse Fitting',
+    details: ['Convexity defect pinch point localization', 'Direct least-squares ellipse fitting', 'Isolated vs cluster classification', '95.8% separation rate'],
   },
   {
     number: '05',
-    id: 'prediction',
-    icon: <BarChart2 size={24} />,
-    title: 'Prediction Output',
-    color: 'teal',
+    id: 'model',
+    icon: <Cpu size={22} />,
+    title: 'Best-Performing Architecture',
+    color: 'blue',
     description:
-      'The model outputs a softmax probability vector across 12 RBC morphology classes. The highest-probability class is selected as the final prediction.',
-    details: ['Softmax probability output', 'Top-3 predictions displayed', 'Confidence score', 'Probability distribution chart', 'Class labels'],
+      `Each segmented cell is passed through ${ACTIVE_MODEL_NAME}. Selected through rigorous empirical benchmarking against MobileNetV2 and EfficientNet-B1 variants.`,
+    statusText: 'EfficientNetV2-S (Controlled Fine-Tuned)',
+    details: ['Compound scaling', 'Controlled fine-tuning of upper stages', 'Class-weighted cross-entropy loss', '87.04% Val / 85.36% Test Acc'],
   },
   {
     number: '06',
-    id: 'gradcam',
-    icon: <Eye size={24} />,
-    title: 'Grad-CAM Explainability',
-    color: 'orange',
+    id: 'prediction',
+    icon: <BarChart2 size={22} />,
+    title: 'Morphology Prediction',
+    color: 'teal',
     description:
-      'Gradient-weighted Class Activation Mapping (Grad-CAM) is used to generate heatmaps showing which regions of the RBC image most influenced the prediction.',
-    details: ['Gradient-based visualization', 'Heatmap generation', 'Overlay mode', 'Attention highlighting', 'Feature importance analysis'],
+      'The model calculates calibrated output probabilities across 12 Chula-RBC-12 morphology classes. The top predictions and probability distributions are computed.',
+    statusText: '12-Class Softmax Probability Vector',
+    details: ['12 morphology classes', 'Top-5 differential probabilities', 'Model output confidence meter', 'Morphology distribution calculation'],
   },
   {
     number: '07',
+    id: 'gradcam',
+    icon: <Eye size={22} />,
+    title: 'Grad-CAM Explainability',
+    color: 'purple',
+    description:
+      'Computes Gradient-weighted Class Activation Mapping (Grad-CAM) from the final convolutional stage. Highlights visual features (central pallor, spiculations, helmet fragments) that drove the classification.',
+    statusText: 'Saliency Heatmap & JET Overlay',
+    details: ['Gradient backpropagation to conv feature maps', 'Global average pooling of gradients', 'JET colormap conversion', 'Alpha-blended composite visualization'],
+  },
+  {
+    number: '08',
     id: 'report',
-    icon: <FileText size={24} />,
-    title: 'Clinical Report Generation',
+    icon: <FileText size={22} />,
+    title: 'Clinical-Style Reporting',
     color: 'green',
     description:
-      'A structured AI-generated analysis report is produced, including morphology details, prediction confidence, Grad-CAM explanation, and clinical significance notes.',
-    details: ['PDF export', 'Print functionality', 'Clinical significance notes', 'Disclaimer included', 'Analysis ID & timestamp'],
+      'Synthesizes specimen metadata, morphology predictions, segmentation counts, and explainability maps into an automated, publication-quality clinical PDF report.',
+    statusText: 'Automated PDF & Print Document',
+    details: ['ReportLab vector generation', 'Specimen & morphology summary', 'Embedded 3-panel visual evidence', 'Mandatory clinical disclaimer'],
   },
 ];
 
@@ -93,125 +115,94 @@ const colorMap: Record<string, { bg: string; icon: string; border: string; badge
 const MethodologyPage: React.FC = () => {
   return (
     <div className="space-y-6">
+      {/* Header */}
       <div>
-        <h1 className="text-2xl font-black text-slate-800">Methodology</h1>
+        <h1 className="text-2xl font-black text-slate-800">Methodology & Technical Architecture</h1>
         <p className="text-sm text-slate-500 mt-1">
-          Complete AI pipeline for RBC morphology classification and explainability
+          Complete 8-stage computer vision and deep learning pipeline for RBC morphology classification
         </p>
       </div>
 
-      {/* Pipeline overview */}
+      {/* Top Banner */}
       <div className="card overflow-hidden">
-        <div className="bg-gradient-to-r from-slate-700 to-slate-800 px-6 py-5 text-white">
-          <h2 className="text-base font-bold mb-1">AI Analysis Pipeline</h2>
-          <p className="text-sm text-slate-300">
-            A 7-step end-to-end pipeline from image upload to clinical report generation.
-          </p>
+        <div className="bg-gradient-to-r from-slate-900 via-blue-950 to-slate-900 px-6 py-6 text-white border-b border-blue-900/30">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-blue-500/20 text-blue-300 rounded-full text-xs font-semibold mb-2">
+                <Award size={13} />
+                Chula-RBC-12 Validated Pipeline
+              </div>
+              <h2 className="text-lg font-bold">End-to-End Computational Workflow</h2>
+              <p className="text-xs text-slate-300 mt-1 max-w-xl">
+                From raw peripheral blood smear microscopy image input to transparent, explainable diagnostic assistance.
+              </p>
+            </div>
+            <div className="text-right sm:border-l sm:border-slate-700/60 sm:pl-6">
+              <p className="text-xs text-slate-400">Selected Architecture</p>
+              <p className="text-sm font-bold text-white mt-0.5">{ACTIVE_MODEL_NAME}</p>
+              <p className="text-xs text-green-400 font-semibold mt-1">87.04% Val / 85.36% Test Acc</p>
+            </div>
+          </div>
         </div>
+
+        {/* Horizontal Visual Pipeline */}
         <div className="p-6">
-          {/* Horizontal pipeline for desktop */}
-          <div className="hidden lg:flex items-center gap-2 mb-8 overflow-x-auto pb-2">
-            {STEPS.map((step, idx) => {
+          <div className="hidden xl:grid grid-cols-8 gap-2 mb-6">
+            {STEPS.map((step) => {
               const c = colorMap[step.color];
               return (
-                <React.Fragment key={step.id}>
-                  <div className="flex flex-col items-center gap-1.5 flex-shrink-0">
-                    <div className={`w-10 h-10 rounded-xl ${c.icon} flex items-center justify-center`}>
-                      {step.icon}
-                    </div>
-                    <span className={`px-2 py-0.5 ${c.badge} text-white text-xs font-bold rounded-full`}>
-                      {step.number}
-                    </span>
-                    <p className="text-xs font-semibold text-slate-700 text-center max-w-[80px] leading-tight">
-                      {step.title}
-                    </p>
+                <div key={step.id} className="flex flex-col items-center text-center">
+                  <div className={`w-11 h-11 rounded-xl ${c.icon} flex items-center justify-center mb-2 shadow-sm`}>
+                    {step.icon}
                   </div>
-                  {idx < STEPS.length - 1 && (
-                    <div className="flex-shrink-0 flex items-center gap-0 pb-10">
-                      <div className="w-6 h-0.5 bg-slate-200" />
-                      <div className="w-0 h-0 border-t-4 border-t-transparent border-b-4 border-b-transparent border-l-8 border-l-slate-300" />
-                    </div>
-                  )}
-                </React.Fragment>
+                  <span className="text-[10px] font-bold text-slate-400 uppercase">Step {step.number}</span>
+                  <p className="text-xs font-bold text-slate-800 leading-tight mt-0.5">{step.title}</p>
+                </div>
               );
             })}
           </div>
 
-          {/* Step cards */}
-          <div className="space-y-4">
-            {STEPS.map((step, idx) => {
+          {/* Detailed step cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {STEPS.map((step) => {
               const c = colorMap[step.color];
               return (
-                <div key={step.id} className="flex gap-4">
-                  {/* Left: number + line */}
-                  <div className="flex flex-col items-center">
-                    <div
-                      className={`w-10 h-10 rounded-xl ${c.icon} flex items-center justify-center flex-shrink-0`}
-                    >
+                <div key={step.id} className={`card p-5 border ${c.border} hover:shadow-md transition-shadow`}>
+                  <div className="flex items-start gap-3.5 mb-3">
+                    <div className={`w-10 h-10 rounded-xl ${c.icon} flex items-center justify-center flex-shrink-0`}>
                       {step.icon}
                     </div>
-                    {idx < STEPS.length - 1 && (
-                      <div className="w-0.5 flex-1 bg-slate-200 mt-2 mb-0 min-h-[16px]" />
-                    )}
+                    <div className="flex-1">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-bold text-slate-400 font-mono">STAGE {step.number}</span>
+                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded ${c.bg} ${c.icon.split(' ')[0]}`}>
+                          {step.statusText}
+                        </span>
+                      </div>
+                      <h3 className="text-sm font-bold text-slate-800 mt-0.5">{step.title}</h3>
+                    </div>
                   </div>
 
-                  {/* Right: content */}
-                  <div className={`flex-1 p-4 ${c.bg} rounded-xl border ${c.border} mb-4`}>
-                    <div className="flex items-center gap-2 mb-2">
-                      <span
-                        className={`px-2 py-0.5 ${c.badge} text-white text-xs font-bold rounded-full`}
-                      >
-                        Step {step.number}
-                      </span>
-                      <h3 className="text-sm font-bold text-slate-800">{step.title}</h3>
-                    </div>
-                    <p className="text-sm text-slate-700 leading-relaxed mb-3">{step.description}</p>
-                    <div className="flex flex-wrap gap-1.5">
-                      {step.details.map((d) => (
-                        <span
-                          key={d}
-                          className="px-2 py-0.5 bg-white/70 text-slate-600 text-xs font-medium rounded-md border border-white/80"
-                        >
-                          {d}
-                        </span>
+                  <p className="text-xs text-slate-600 leading-relaxed mb-3">{step.description}</p>
+
+                  <div className="pt-3 border-t border-slate-100">
+                    <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">
+                      Technical Details:
+                    </p>
+                    <ul className="grid grid-cols-1 sm:grid-cols-2 gap-1">
+                      {step.details.map((d, i) => (
+                        <li key={i} className="flex items-center gap-1.5 text-xs text-slate-600">
+                          <CheckCircle2 size={12} className="text-green-600 flex-shrink-0" />
+                          <span>{d}</span>
+                        </li>
                       ))}
-                    </div>
+                    </ul>
                   </div>
                 </div>
               );
             })}
           </div>
         </div>
-      </div>
-
-      {/* Technical specs */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        {[
-          {
-            title: 'Deep Learning Model',
-            items: ['EfficientNetV2-S architecture', 'Pre-trained on ImageNet', 'Fine-tuned on RBC dataset', '12 morphology classes', 'Transfer learning approach'],
-          },
-          {
-            title: 'Image Processing',
-            items: ['OpenCV preprocessing', 'Watershed segmentation', 'Ellipse fitting (Hough transform)', 'CLAHE enhancement', 'Gaussian blur denoising'],
-          },
-          {
-            title: 'Explainability',
-            items: ['Grad-CAM visualization', 'Last convolutional layer gradients', 'Heatmap generation', 'Overlay mode', 'Feature attribution analysis'],
-          },
-        ].map((section) => (
-          <div key={section.title} className="card p-5">
-            <h3 className="text-sm font-bold text-slate-800 mb-3">{section.title}</h3>
-            <ul className="space-y-1.5">
-              {section.items.map((item) => (
-                <li key={item} className="flex items-start gap-2 text-xs text-slate-600">
-                  <span className="text-blue-500 mt-0.5">•</span>
-                  {item}
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))}
       </div>
     </div>
   );

@@ -79,6 +79,7 @@ export interface AnalysisResult {
   segmentedImageUrl?: string;
   heatmapUrl?: string;
   overlayUrl?: string;
+  reportUrl?: string;
 }
 
 export interface HistoryItem {
@@ -98,6 +99,7 @@ export type Page =
   | 'report'
   | 'history'
   | 'methodology'
+  | 'model-performance'
   | 'about';
 
 export interface UploadedFile {
@@ -116,3 +118,30 @@ export interface StatCard {
   icon: string;
   color: string;
 }
+
+export interface ModelCandidate {
+  id: string;
+  name: string;
+  family: string;
+  checkpointPath: string;
+  modelSizeMB: number;
+  valAccuracy: number;
+  testAccuracy: number;
+  macroPrecision: number;
+  macroRecall: number;
+  macroF1: number;
+  weightedF1: number;
+  avgInferenceLatencyMs: number;
+  selected: boolean;
+  selectionRationale: string;
+}
+
+export interface PerClassMetric {
+  classId: number;
+  className: string;
+  precision: number;
+  recall: number;
+  f1: number;
+  support: number;
+}
+
