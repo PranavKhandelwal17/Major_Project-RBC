@@ -11,13 +11,12 @@ import {
   Eye,
   CheckCircle2,
 } from 'lucide-react';
-import type { Page } from '../types';
-import { DASHBOARD_STATS, MOCK_HISTORY, MOCK_RBC_IMAGE } from '../data/mockData';
+import type { Page, AnalysisResult, MorphologyClass } from '../types';
+import { DASHBOARD_STATS, MOCK_HISTORY, MOCK_RBC_IMAGE, MOCK_ANALYSIS_RESULT, MORPHOLOGY_COLORS } from '../data/mockData';
 import MorphologyBadge from '../components/shared/MorphologyBadge';
-import type { MorphologyClass } from '../types';
 
 interface DashboardPageProps {
-  onNavigate: (page: Page) => void;
+  onNavigate: (page: Page, result?: AnalysisResult) => void;
   onStartDemo: () => void;
 }
 
@@ -200,41 +199,86 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate, onStartDemo }
               </tr>
             </thead>
             <tbody>
-              {recentAnalyses.map((item) => (
-                <tr
-                  key={item.id}
-                  className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors"
-                >
-                  <td className="px-4 py-3 text-xs font-mono font-semibold text-blue-600">{item.analysisId}</td>
-                  <td className="px-4 py-3">
-                    <div className="w-10 h-10 rounded-lg overflow-hidden border border-slate-200 bg-slate-900">
-                      <img src={MOCK_RBC_IMAGE} alt="" className="w-full h-full object-cover" />
-                    </div>
-                  </td>
-                  <td className="px-4 py-3">
-                    <MorphologyBadge morphology={item.predictedClass as MorphologyClass} size="sm" />
-                  </td>
-                  <td className="px-4 py-3">
-                    <span className="text-sm font-bold text-slate-800">{item.confidence.toFixed(2)}%</span>
-                  </td>
-                  <td className="px-4 py-3 text-xs text-slate-500 whitespace-nowrap">{item.date}</td>
-                  <td className="px-4 py-3">
-                    <span className="flex items-center gap-1.5 text-xs font-medium text-green-600">
-                      <CheckCircle2 size={12} />
-                      Completed
-                    </span>
-                  </td>
-                  <td className="px-4 py-3">
-                    <button
-                      onClick={() => onNavigate('results')}
-                      className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors"
-                    >
-                      <Eye size={11} />
-                      View
-                    </button>
-                  </td>
-                </tr>
-              ))}
+              {recentAnalyses.map((item) => {
+                const sampleMap: Record<string, string> = {
+                  'Normal': '/static/demo/0_Normal_segmented.png',
+                  'Macrocyte': '/static/demo/1_Macrocyte_segmented.png',
+                  'Microcyte': '/static/demo/2_Microcyte_segmented.png',
+                  'Spherocyte': '/static/demo/3_Spherocyte_segmented.png',
+                  'Target Cell': '/static/demo/4_Target_Cell_segmented.png',
+                  'Stomatocyte': '/static/demo/5_Stomatocyte_segmented.png',
+                  'Ovalocyte': '/static/demo/6_Ovalocyte_segmented.png',
+                  'Teardrop': '/static/demo/7_Teardrop_segmented.png',
+                  'Burr Cell': '/static/demo/8_Burr_Cell_segmented.png',
+                  'Schistocyte': '/static/demo/9_Schistocyte_segmented.png',
+                  'Hypochromia': '/static/demo/11_Hypochromia_segmented.png',
+                  'Uncategorized': '/static/demo/10_Uncategorized_segmented.png',
+                };
+                const classFallback = sampleMap[item.predictedClass] || '/static/demo/0_Normal_segmented.png';
+                const thumbUrl = item.imageUrl || classFallback;
+                const viewResult: AnalysisResult = {
+                  ...MOCK_ANALYSIS_RESULT,
+                  id: item.id,
+                  analysisId: item.analysisId,
+                  date: item.date,
+                  imageUrl: thumbUrl,
+                  predictedClass: item.predictedClass as MorphologyClass,
+                  confidence: item.confidence,
+                  topPredictions: [
+                    { class: item.predictedClass, confidence: item.confidence },
+                    { class: 'Normal', confidence: Number((100 - item.confidence).toFixed(1)) },
+                  ],
+                  morphologyDistribution: [
+                    { name: item.predictedClass, value: item.confidence, color: MORPHOLOGY_COLORS[item.predictedClass as MorphologyClass] || '#22c55e' },
+                    { name: 'Normal', value: Number((100 - item.confidence).toFixed(1)), color: '#22c55e' },
+                  ],
+                };
+                return (
+                  <tr
+                    key={item.id}
+                    className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors"
+                  >
+                    <td className="px-4 py-3 text-xs font-mono font-semibold text-blue-600">{item.analysisId}</td>
+                    <td className="px-4 py-3">
+                      <div className="w-10 h-10 rounded-lg overflow-hidden border border-slate-200 bg-slate-900">
+                        <img
+                          src={thumbUrl}
+                          alt={item.predictedClass}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            const el = e.target as HTMLImageElement;
+                            if (el.src !== classFallback) {
+                              el.src = classFallback;
+                            }
+                          }}
+                        />
+                      </div>
+                    </td>
+                    <td className="px-4 py-3">
+                      <MorphologyBadge morphology={item.predictedClass as MorphologyClass} size="sm" />
+                    </td>
+                    <td className="px-4 py-3">
+                      <span className="text-sm font-bold text-slate-800">{item.confidence.toFixed(2)}%</span>
+                    </td>
+                    <td className="px-4 py-3 text-xs text-slate-500 whitespace-nowrap">{item.date}</td>
+                    <td className="px-4 py-3">
+                      <span className="flex items-center gap-1.5 text-xs font-medium text-green-600">
+                        <CheckCircle2 size={12} />
+                        Completed
+                      </span>
+                    </td>
+                    <td className="px-4 py-3">
+                      <button
+                        onClick={() => onNavigate('results', viewResult)}
+                        className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors cursor-pointer"
+                      >
+                        <Eye size={11} />
+                        View
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>

@@ -117,7 +117,9 @@ def normalize_for_model(
     bgr = _ensure_bgr_uint8(image_bgr)
     rgb = cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB).astype(np.float32)
 
-    if norm_type == "zero_one":
+    if norm_type in ("none", "raw", "raw_255"):
+        return rgb
+    elif norm_type == "zero_one":
         return rgb / 255.0
     elif norm_type == "imagenet":
         rgb_norm = rgb / 255.0
@@ -125,4 +127,5 @@ def normalize_for_model(
         std = np.array([0.229, 0.224, 0.225], dtype=np.float32)
         return (rgb_norm - mean) / std
     return rgb / 255.0
+
 

@@ -14,6 +14,7 @@ import {
   MORPHOLOGY_DESCRIPTIONS,
   MOCK_SEGMENTED_IMAGE,
   MOCK_GRADCAM_IMAGE,
+  MOCK_RBC_IMAGE,
 } from '../data/mockData';
 import { downloadClinicalReport } from '../utils/reportExporter';
 import PredictionCard from '../components/analysis/PredictionCard';
@@ -30,8 +31,8 @@ interface ResultsPageProps {
 const ResultsPage: React.FC<ResultsPageProps> = ({ result: propResult, onNavigate }) => {
   const result = propResult || MOCK_ANALYSIS_RESULT;
 
-  const originalImg = result.imageUrl || MOCK_ANALYSIS_RESULT.imageUrl;
-  const segmentedImg = result.segmentedImageUrl || MOCK_SEGMENTED_IMAGE;
+  const originalImg = result.imageUrl || result.processedImageUrl || MOCK_RBC_IMAGE;
+  const segmentedImg = result.segmentedImageUrl || result.processedImageUrl || result.imageUrl || MOCK_SEGMENTED_IMAGE;
   const gradcamImg = result.overlayUrl || result.heatmapUrl || MOCK_GRADCAM_IMAGE;
 
   return (
